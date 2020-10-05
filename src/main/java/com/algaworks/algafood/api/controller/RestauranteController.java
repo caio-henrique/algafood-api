@@ -5,6 +5,7 @@ import com.algaworks.algafood.api.assembler.RestauranteModelAssembler;
 import com.algaworks.algafood.api.model.RestauranteModel;
 import com.algaworks.algafood.api.model.input.CozinhaIdInputModel;
 import com.algaworks.algafood.api.model.input.RestauranteInputModel;
+import com.algaworks.algafood.domain.exception.CidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.CozinhaNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.model.Restaurante;
@@ -13,7 +14,6 @@ import com.algaworks.algafood.domain.service.CadastroRestauranteService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
@@ -70,20 +70,21 @@ public class RestauranteController {
 
             Restaurante restaurante = restauranteInputDisassembler.toDomainObject(restauranteInputModel);
             return restauranteModelAssembler.toModel(cadastroRestaurante.salvar(restaurante));
-        } catch (CozinhaNaoEncontradaException e) {
+        } catch (CozinhaNaoEncontradaException | CidadeNaoEncontradaException e) {
             throw new NegocioException(e.getMessage(), e);
         }
     }
 
     @PutMapping("/{restauranteId}")
-    public RestauranteModel atualizar(@PathVariable Long restauranteId, @RequestBody RestauranteInputModel restauranteInputModel) {
+    public RestauranteModel atualizar(@PathVariable Long restauranteId,
+                                      @RequestBody @Valid RestauranteInputModel restauranteInputModel) {
 
         try {
 
             Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
             restauranteInputDisassembler.copyToDomainObject(restauranteInputModel, restauranteAtual);
             return restauranteModelAssembler.toModel(cadastroRestaurante.salvar(restauranteAtual));
-        } catch (CozinhaNaoEncontradaException e) {
+        } catch (CozinhaNaoEncontradaException | CidadeNaoEncontradaException e) {
             throw new NegocioException(e.getMessage());
         }
     }
