@@ -5,6 +5,7 @@ import com.algaworks.algafood.api.assembler.RestauranteModelAssembler;
 import com.algaworks.algafood.api.model.RestauranteModel;
 import com.algaworks.algafood.api.model.input.CozinhaIdInputModel;
 import com.algaworks.algafood.api.model.input.RestauranteInputModel;
+import com.algaworks.algafood.api.model.view.RestauranteView;
 import com.algaworks.algafood.domain.exception.CidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.CozinhaNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
@@ -12,6 +13,7 @@ import com.algaworks.algafood.domain.exception.RestauranteNaoEncontradoException
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.repository.RestauranteRepository;
 import com.algaworks.algafood.domain.service.CadastroRestauranteService;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -20,6 +22,7 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -48,15 +51,56 @@ public class RestauranteController {
     private RestauranteInputDisassembler restauranteInputDisassembler;
 
     @GetMapping
-    public ResponseEntity<List<RestauranteModel>> listar() {
+	public MappingJacksonValue listar(@RequestParam(required = false) String projecao) {
+		List<Restaurante> restaurantes = restauranteRepository.findAll();
+		List<RestauranteModel> restaurantesModel = restauranteModelAssembler.toCollectionModel(restaurantes);
 
-        List<Restaurante> restaurantes = restauranteRepository.findAll();
-        List<RestauranteModel> restauranteModels = restauranteModelAssembler.toCollectionModel(restaurantes);
+		MappingJacksonValue restaurantesWrapper = new MappingJacksonValue(restaurantesModel);
+		restaurantesWrapper.setSerializationView(RestauranteView.Resumo.class);
 
-        return ResponseEntity.ok()
-                .cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS))
-                .body(restauranteModels);
-    }
+		if ("nome".equals(projecao)) {
+			restaurantesWrapper.setSerializationView(RestauranteView.ApenasNome.class);
+		} else if ("completo".equals(projecao)) {
+			restaurantesWrapper.setSerializationView(null);
+		}
+
+		return restaurantesWrapper;
+	}
+
+//    @GetMapping
+//    public ResponseEntity<List<RestauranteModel>> listar() {
+//
+//        List<Restaurante> restaurantes = restauranteRepository.findAll();
+//        List<RestauranteModel> restauranteModels = restauranteModelAssembler.toCollectionModel(restaurantes);
+//
+//        return ResponseEntity.ok()
+//                .cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS))
+//                .body(restauranteModels);
+//    }
+//
+//    @GetMapping(params = "projecao=resumo")
+//    @JsonView(RestauranteView.Resumo.class)
+//    public ResponseEntity<List<RestauranteModel>> listarResumido() {
+//
+//        List<Restaurante> restaurantes = restauranteRepository.findAll();
+//        List<RestauranteModel> restauranteModels = restauranteModelAssembler.toCollectionModel(restaurantes);
+//
+//        return ResponseEntity.ok()
+//                .cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS))
+//                .body(restauranteModels);
+//    }
+//
+//    @GetMapping(params = "projecao=nome")
+//    @JsonView(RestauranteView.ApenasNome.class)
+//    public ResponseEntity<List<RestauranteModel>> listarNomes() {
+//
+//        List<Restaurante> restaurantes = restauranteRepository.findAll();
+//        List<RestauranteModel> restauranteModels = restauranteModelAssembler.toCollectionModel(restaurantes);
+//
+//        return ResponseEntity.ok()
+//                .cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS))
+//                .body(restauranteModels);
+//    }
 
     @GetMapping("/{restauranteId}")
     public RestauranteModel buscar(@PathVariable Long restauranteId) {
