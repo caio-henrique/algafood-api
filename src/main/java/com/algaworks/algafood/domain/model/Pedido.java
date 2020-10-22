@@ -36,7 +36,7 @@ public class Pedido {
     private StatusPedido status = StatusPedido.CRIADO;
 
     @CreationTimestamp
-    private LocalDateTime dataCriacao;
+    private OffsetDateTime dataCriacao;
 
     private OffsetDateTime dataConfirmacao;
     private OffsetDateTime dataCancelamento;
