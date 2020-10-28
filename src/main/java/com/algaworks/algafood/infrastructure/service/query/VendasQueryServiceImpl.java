@@ -1,4 +1,4 @@
-package com.algaworks.algafood.infrastructure.service;
+package com.algaworks.algafood.infrastructure.service.query;
 
 import com.algaworks.algafood.domain.model.Pedido;
 import com.algaworks.algafood.domain.model.StatusPedido;
@@ -21,7 +21,7 @@ public class VendasQueryServiceImpl implements VendasQueryService {
     private EntityManager manager;
 
     @Override
-    public List<VendaDiaria> consultaVendaDiarias(VendaDiariaFilter filtro, String timeOffset) {
+    public List<VendaDiaria> consultaVendasDiarias(VendaDiariaFilter filtro, String timeOffset) {
 
         var builder = manager.getCriteriaBuilder();
         var query = builder.createQuery(VendaDiaria.class);
