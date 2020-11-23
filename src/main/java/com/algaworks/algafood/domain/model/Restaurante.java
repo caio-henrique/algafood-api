@@ -3,6 +3,7 @@ package com.algaworks.algafood.domain.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -47,16 +48,19 @@ public class Restaurante {
     private OffsetDateTime dataAtualizacao;
 
     @ManyToMany
+    @ToString.Exclude
     @JoinTable(name = "restaurante_forma_pagamento",
         joinColumns = @JoinColumn(name = "restaurante_id"),
         inverseJoinColumns = @JoinColumn(name = "forma_pagamento_id"))
     private Set<FormaPagamento> formaPagamentos = new HashSet<>();
 
     @JsonIgnore
+    @ToString.Exclude
     @OneToMany(mappedBy = "restaurante")
     private List<Produto> produtos = new ArrayList<>();
 
     @ManyToMany
+    @ToString.Exclude
     @JoinTable(name = "restaurante_usuario_responsavel",
             joinColumns = @JoinColumn(name = "restaurante_id"),
             inverseJoinColumns = @JoinColumn(name = "usuario_id"))

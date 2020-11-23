@@ -2,6 +2,7 @@ package com.algaworks.algafood.domain.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -29,6 +30,7 @@ public class Produto {
     private Boolean ativo;
 
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "restaurante_id", nullable = false)
     private Restaurante restaurante;
 }
