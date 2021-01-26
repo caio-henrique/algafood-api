@@ -6,6 +6,7 @@ import com.github.caio.henrique.algafood.api.assembler.PedidoResumoModelAssemble
 import com.github.caio.henrique.algafood.api.model.PedidoModel;
 import com.github.caio.henrique.algafood.api.model.PedidoResumoModel;
 import com.github.caio.henrique.algafood.api.model.input.PedidoInputModel;
+import com.github.caio.henrique.algafood.api.openapi.controller.PedidoControllerOpenApi;
 import com.github.caio.henrique.algafood.core.data.PageableTranslator;
 import com.github.caio.henrique.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.github.caio.henrique.algafood.domain.exception.NegocioException;
@@ -16,20 +17,23 @@ import com.github.caio.henrique.algafood.domain.filter.PedidoFilter;
 import com.github.caio.henrique.algafood.domain.service.EmissaoPedidoService;
 import com.github.caio.henrique.algafood.infrastructure.repository.spec.PedidoSpecs;
 import com.google.common.collect.ImmutableMap;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/pedidos")
-public class PedidoController {
+@RequestMapping(path = "/pedidos", produces = MediaType.APPLICATION_JSON_VALUE)
+public class PedidoController implements PedidoControllerOpenApi {
 
     @Autowired
     private PedidoRepository pedidoRepository;

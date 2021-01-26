@@ -4,19 +4,21 @@ import com.github.caio.henrique.algafood.api.assembler.FormaPagamentoInputDisass
 import com.github.caio.henrique.algafood.api.assembler.FormaPagamentoModelAssembler;
 import com.github.caio.henrique.algafood.api.model.FormaPagamentoModel;
 import com.github.caio.henrique.algafood.api.model.input.FormaPagamentoInputModel;
+import com.github.caio.henrique.algafood.api.openapi.controller.FormaPagamentoControllerOpenApi;
 import com.github.caio.henrique.algafood.domain.model.FormaPagamento;
 import com.github.caio.henrique.algafood.domain.repository.FormaPagamentoRepository;
 import com.github.caio.henrique.algafood.domain.service.CadastroFormaPagamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/formas-pagamento")
-public class FormaPagamentoController {
+@RequestMapping(path = "/formas-pagamento", produces = MediaType.APPLICATION_JSON_VALUE)
+public class FormaPagamentoController implements FormaPagamentoControllerOpenApi {
 
     @Autowired
     private FormaPagamentoRepository formaPagamentoRepository;

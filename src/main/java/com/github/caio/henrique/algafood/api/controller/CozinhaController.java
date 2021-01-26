@@ -5,6 +5,7 @@ import com.github.caio.henrique.algafood.api.assembler.CozinhaModelAssembler;
 import com.github.caio.henrique.algafood.api.model.CozinhaModel;
 import com.github.caio.henrique.algafood.api.model.CozinhasXmlWrapper;
 import com.github.caio.henrique.algafood.api.model.input.CozinhaInputModel;
+import com.github.caio.henrique.algafood.api.openapi.controller.CozinhaControllerOpenApi;
 import com.github.caio.henrique.algafood.domain.model.Cozinha;
 import com.github.caio.henrique.algafood.domain.repository.CozinhaRepository;
 import com.github.caio.henrique.algafood.domain.service.CadastroCozinhaService;
@@ -22,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cozinhas")
-public class CozinhaController {
+public class CozinhaController implements CozinhaControllerOpenApi {
 
     @Autowired
     private CozinhaRepository cozinhaRepository;
@@ -36,7 +37,7 @@ public class CozinhaController {
     @Autowired
     private CozinhaInputDisassembler cozinhaInputDisassembler;
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<CozinhaModel> listar(@PageableDefault(size = 2) Pageable pageable) {
         Page<Cozinha> cozinhaPage = cozinhaRepository.findAll(pageable);
         List<CozinhaModel> cozinhaModels = cozinhaModelAssembler.toCollectionModel(cozinhaPage.getContent());
@@ -45,10 +46,10 @@ public class CozinhaController {
         return cozinhaModelPage;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-    public CozinhasXmlWrapper listarXml() {
-        return new CozinhasXmlWrapper(cozinhaRepository.findAll());
-    }
+//    @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
+//    public CozinhasXmlWrapper listarXml() {
+//        return new CozinhasXmlWrapper(cozinhaRepository.findAll());
+//    }
 
 //    @GetMapping("/{cozinhaId}")
 //    public ResponseEntity<Cozinha> buscar(@PathVariable("cozinhaId") Long id) {
