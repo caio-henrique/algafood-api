@@ -1,11 +1,13 @@
 package com.github.caio.henrique.algafood.api.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.github.caio.henrique.algafood.api.assembler.RestauranteInputDisassembler;
 import com.github.caio.henrique.algafood.api.assembler.RestauranteModelAssembler;
 import com.github.caio.henrique.algafood.api.model.RestauranteModel;
 import com.github.caio.henrique.algafood.api.model.input.CozinhaIdInputModel;
 import com.github.caio.henrique.algafood.api.model.input.RestauranteInputModel;
 import com.github.caio.henrique.algafood.api.model.view.RestauranteView;
+import com.github.caio.henrique.algafood.api.openapi.controller.RestauranteControllerOpenApi;
 import com.github.caio.henrique.algafood.domain.exception.CidadeNaoEncontradaException;
 import com.github.caio.henrique.algafood.domain.exception.CozinhaNaoEncontradaException;
 import com.github.caio.henrique.algafood.domain.exception.NegocioException;
@@ -15,9 +17,11 @@ import com.github.caio.henrique.algafood.domain.repository.RestauranteRepository
 import com.github.caio.henrique.algafood.domain.service.CadastroRestauranteService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -31,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/restaurantes")
-public class RestauranteController {
+@RequestMapping(path = "/restaurantes", produces = MediaType.APPLICATION_JSON_VALUE)
+public class RestauranteController implements RestauranteControllerOpenApi {
 
     @Autowired
     private RestauranteRepository restauranteRepository;
@@ -46,22 +50,35 @@ public class RestauranteController {
     @Autowired
     private RestauranteInputDisassembler restauranteInputDisassembler;
 
+
+    @JsonView(RestauranteView.Resumo.class)
     @GetMapping
-	public MappingJacksonValue listar(@RequestParam(required = false) String projecao) {
-		List<Restaurante> restaurantes = restauranteRepository.findAll();
-		List<RestauranteModel> restaurantesModel = restauranteModelAssembler.toCollectionModel(restaurantes);
+    public List<RestauranteModel> listar() {
+        return restauranteModelAssembler.toCollectionModel(restauranteRepository.findAll());
+    }
 
-		MappingJacksonValue restaurantesWrapper = new MappingJacksonValue(restaurantesModel);
-		restaurantesWrapper.setSerializationView(RestauranteView.Resumo.class);
+    @JsonView(RestauranteView.ApenasNome.class)
+    @GetMapping(params = "projecao=apenas-nome")
+    public List<RestauranteModel> listarApenasNomes() {
+        return listar();
+    }
 
-		if ("nome".equals(projecao)) {
-			restaurantesWrapper.setSerializationView(RestauranteView.ApenasNome.class);
-		} else if ("completo".equals(projecao)) {
-			restaurantesWrapper.setSerializationView(null);
-		}
-
-		return restaurantesWrapper;
-	}
+//    @GetMapping
+//	public MappingJacksonValue listar(@RequestParam(required = false) String projecao) {
+//		List<Restaurante> restaurantes = restauranteRepository.findAll();
+//		List<RestauranteModel> restaurantesModel = restauranteModelAssembler.toCollectionModel(restaurantes);
+//
+//		MappingJacksonValue restaurantesWrapper = new MappingJacksonValue(restaurantesModel);
+//		restaurantesWrapper.setSerializationView(RestauranteView.Resumo.class);
+//
+//		if ("nome".equals(projecao)) {
+//			restaurantesWrapper.setSerializationView(RestauranteView.ApenasNome.class);
+//		} else if ("completo".equals(projecao)) {
+//			restaurantesWrapper.setSerializationView(null);
+//		}
+//
+//		return restaurantesWrapper;
+//	}
 
 //    @GetMapping
 //    public ResponseEntity<List<RestauranteModel>> listar() {
