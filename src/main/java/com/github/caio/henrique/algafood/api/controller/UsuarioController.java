@@ -6,20 +6,22 @@ import com.github.caio.henrique.algafood.api.model.UsuarioModel;
 import com.github.caio.henrique.algafood.api.model.input.SenhaInputModel;
 import com.github.caio.henrique.algafood.api.model.input.UsuarioComSenhaInputModel;
 import com.github.caio.henrique.algafood.api.model.input.UsuarioInputModel;
+import com.github.caio.henrique.algafood.api.openapi.controller.UsuarioControllerOpenApi;
 import com.github.caio.henrique.algafood.domain.model.Usuario;
 import com.github.caio.henrique.algafood.domain.repository.UsuarioRepository;
 import com.github.caio.henrique.algafood.domain.service.CadastroUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/usuarios")
-public class UsuarioController {
+@RequestMapping(path = "/usuarios", produces = MediaType.APPLICATION_JSON_VALUE)
+public class UsuarioController implements UsuarioControllerOpenApi {
 
     @Autowired
     private UsuarioRepository usuarioRepository;

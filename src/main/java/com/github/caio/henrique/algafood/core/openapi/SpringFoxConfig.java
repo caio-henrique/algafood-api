@@ -3,19 +3,24 @@ package com.github.caio.henrique.algafood.core.openapi;
 import com.fasterxml.classmate.TypeResolver;
 import com.github.caio.henrique.algafood.api.exceptionhandler.Problem;
 import com.github.caio.henrique.algafood.api.model.CozinhaModel;
+import com.github.caio.henrique.algafood.api.model.PedidoResumoModel;
 import com.github.caio.henrique.algafood.api.openapi.model.CozinhasModelOpenApi;
 import com.github.caio.henrique.algafood.api.openapi.model.PageableModelOpenApi;
+import com.github.caio.henrique.algafood.api.openapi.model.PedidosResumoModelOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.builders.ResponseMessageBuilder;
 import springfox.documentation.schema.AlternateTypeRules;
@@ -28,6 +33,11 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLStreamHandler;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,6 +54,7 @@ public class SpringFoxConfig implements WebMvcConfigurer {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.github.caio.henrique.algafood.api"))
+                .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false)
                 .globalResponseMessage(RequestMethod.GET, globalGetResponseMessages())
@@ -51,11 +62,16 @@ public class SpringFoxConfig implements WebMvcConfigurer {
                 .globalResponseMessage(RequestMethod.PUT, globalPostPutResponseMessages())
                 .globalResponseMessage(RequestMethod.DELETE, globalDeleteResponseMessages())
                 .additionalModels(typeResolver.resolve(Problem.class))
-//                .ignoredParameterTypes()
+                .ignoredParameterTypes(ServletWebRequest.class,
+                        URL.class, URI.class, URLStreamHandler.class, Resource.class,
+                        File.class, InputStream.class)
                 .directModelSubstitute(Pageable.class, PageableModelOpenApi.class)
                 .alternateTypeRules(AlternateTypeRules.newRule(
                         typeResolver.resolve(Page.class, CozinhaModel.class),
                         CozinhasModelOpenApi.class))
+                .alternateTypeRules(AlternateTypeRules.newRule(
+                        typeResolver.resolve(Page.class, PedidoResumoModel.class),
+                        PedidosResumoModelOpenApi.class))
                 .apiInfo(apiInfo())
                 .tags(new Tag("Cidades", "Gerencia as cidades"),
                         new Tag("Grupos", "Gerencia os grupos de usuários"),
@@ -64,7 +80,9 @@ public class SpringFoxConfig implements WebMvcConfigurer {
                         new Tag("Pedidos", "Gerencia os pedidos"),
                         new Tag("Restaurantes", "Gerencia os restaurantes"),
                         new Tag("Estados", "Gerencia os estados"),
-                        new Tag("Produtos", "Gerencia os produtos de restaurantes"));
+                        new Tag("Produtos", "Gerencia os produtos de restaurantes"),
+                        new Tag("Usuários", "Gerencia os usuários"),
+                        new Tag("Estatísticas", "Estatísticas da AlgaFood"));
     }
 
     @Override

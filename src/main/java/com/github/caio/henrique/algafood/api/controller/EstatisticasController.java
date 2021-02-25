@@ -1,5 +1,6 @@
 package com.github.caio.henrique.algafood.api.controller;
 
+import com.github.caio.henrique.algafood.api.openapi.controller.EstatisticasControllerOpenApi;
 import com.github.caio.henrique.algafood.domain.filter.VendaDiariaFilter;
 import com.github.caio.henrique.algafood.domain.model.dto.VendaDiaria;
 import com.github.caio.henrique.algafood.domain.service.VendasQueryService;
@@ -17,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/estatisticas")
-public class EstatisticasController {
+public class EstatisticasController implements EstatisticasControllerOpenApi {
 
     @Autowired
     private VendasQueryService vendasQueryService;
