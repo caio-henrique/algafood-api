@@ -2,25 +2,26 @@ package com.github.caio.henrique.algafood.api.controller;
 
 import com.github.caio.henrique.algafood.api.assembler.FormaPagamentoModelAssembler;
 import com.github.caio.henrique.algafood.api.model.FormaPagamentoModel;
+import com.github.caio.henrique.algafood.api.openapi.controller.RestauranteFormaPagamentoControllerOpenApi;
 import com.github.caio.henrique.algafood.domain.model.Restaurante;
 import com.github.caio.henrique.algafood.domain.service.CadastroRestauranteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/restaurantes/{restauranteId}/formas-pagamento")
-public class RestauranteFormaPagamentoController {
-
+@RequestMapping(path = "/restaurantes/{restauranteId}/formas-pagamento",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+public class RestauranteFormaPagamentoController implements RestauranteFormaPagamentoControllerOpenApi {
 
     @Autowired
     private CadastroRestauranteService cadastroRestaurante;
 
     @Autowired
     private FormaPagamentoModelAssembler formaPagamentoModelAssembler;
-
 
     @GetMapping
     public List<FormaPagamentoModel> listar(@PathVariable Long restauranteId) {

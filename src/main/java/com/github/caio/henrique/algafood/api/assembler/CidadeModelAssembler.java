@@ -1,27 +1,47 @@
 package com.github.caio.henrique.algafood.api.assembler;
 
+import com.github.caio.henrique.algafood.api.controller.CidadeController;
+import com.github.caio.henrique.algafood.api.controller.EstadoController;
+import com.github.caio.henrique.algafood.api.controller.UsuarioController;
 import com.github.caio.henrique.algafood.api.model.CidadeModel;
+import com.github.caio.henrique.algafood.api.model.UsuarioModel;
 import com.github.caio.henrique.algafood.domain.model.Cidade;
+import com.github.caio.henrique.algafood.domain.model.Usuario;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class CidadeModelAssembler {
+public class CidadeModelAssembler extends RepresentationModelAssemblerSupport<Cidade, CidadeModel> {
 
     @Autowired
     private ModelMapper modelMapper;
 
-    public CidadeModel toModel(Cidade cidade) {
-        return modelMapper.map(cidade, CidadeModel.class);
+    public CidadeModelAssembler() {
+        super(CidadeController.class, CidadeModel.class);
     }
 
-    public List<CidadeModel> toCollectionModel(List<Cidade> cidades) {
-        return cidades.stream()
-                .map(cidade -> toModel(cidade))
-                .collect(Collectors.toList());
+    public CidadeModel toModel(Cidade cidade) {
+
+        CidadeModel cidadeModel = createModelWithId(cidade.getId(), cidade);
+        modelMapper.map(cidade, cidadeModel);
+
+        cidadeModel.add(linkTo(methodOn(CidadeController.class)
+                .listar()).withRel("cidades"));
+        cidadeModel.getEstado().add(linkTo(methodOn(EstadoController.class)
+                .buscar(cidadeModel.getEstado().getId())).withSelfRel());
+
+        return cidadeModel;
+    }
+
+    @Override
+    public CollectionModel<CidadeModel> toCollectionModel(Iterable<? extends Cidade> entities) {
+        return super.toCollectionModel(entities)
+                .add(linkTo(UsuarioController.class).withSelfRel());
     }
 }

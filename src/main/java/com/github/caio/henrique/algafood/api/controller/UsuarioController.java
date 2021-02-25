@@ -10,6 +10,7 @@ import com.github.caio.henrique.algafood.domain.model.Usuario;
 import com.github.caio.henrique.algafood.domain.repository.UsuarioRepository;
 import com.github.caio.henrique.algafood.domain.service.CadastroUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class UsuarioController {
     private UsuarioInputDisassembler usuarioInputDisassembler;
 
     @GetMapping
-    public List<UsuarioModel> listar() {
+    public CollectionModel<UsuarioModel> listar() {
         List<Usuario> todasUsuarios = usuarioRepository.findAll();
 
         return usuarioModelAssembler.toCollectionModel(todasUsuarios);

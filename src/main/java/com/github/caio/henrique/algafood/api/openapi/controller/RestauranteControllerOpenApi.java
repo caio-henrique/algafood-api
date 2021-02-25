@@ -7,8 +7,6 @@ import com.github.caio.henrique.algafood.api.model.input.RestauranteInputModel;
 import com.github.caio.henrique.algafood.api.model.view.RestauranteView;
 import com.github.caio.henrique.algafood.api.openapi.model.RestauranteBasicoModelOpenApi;
 import io.swagger.annotations.*;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

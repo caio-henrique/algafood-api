@@ -2,17 +2,21 @@ package com.github.caio.henrique.algafood.api.controller;
 
 import com.github.caio.henrique.algafood.api.assembler.UsuarioModelAssembler;
 import com.github.caio.henrique.algafood.api.model.UsuarioModel;
+import com.github.caio.henrique.algafood.api.openapi.controller.RestauranteUsuarioResponsavelControllerOpenApi;
 import com.github.caio.henrique.algafood.domain.model.Restaurante;
 import com.github.caio.henrique.algafood.domain.service.CadastroRestauranteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/restaurantes/{restauranteId}/responsaveis")
-public class RestauranteUsuarioResponsavelController {
+@RequestMapping(path = "/restaurantes/{restauranteId}/responsaveis",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+public class RestauranteUsuarioResponsavelController implements RestauranteUsuarioResponsavelControllerOpenApi {
 
     @Autowired
     private CadastroRestauranteService cadastroRestaurante;
@@ -21,7 +25,7 @@ public class RestauranteUsuarioResponsavelController {
     private UsuarioModelAssembler usuarioModelAssembler;
 
     @GetMapping
-    public List<UsuarioModel> listar(@PathVariable Long restauranteId) {
+    public CollectionModel<UsuarioModel> listar(@PathVariable Long restauranteId) {
         Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(restauranteId);
 
         return usuarioModelAssembler.toCollectionModel(restaurante.getResponsaveis());
