@@ -1,12 +1,11 @@
 package com.github.caio.henrique.algafood.api.assembler;
 
+import com.github.caio.henrique.algafood.api.AlgaLinks;
 import com.github.caio.henrique.algafood.api.controller.CidadeController;
 import com.github.caio.henrique.algafood.api.controller.EstadoController;
 import com.github.caio.henrique.algafood.api.controller.UsuarioController;
 import com.github.caio.henrique.algafood.api.model.CidadeModel;
-import com.github.caio.henrique.algafood.api.model.UsuarioModel;
 import com.github.caio.henrique.algafood.domain.model.Cidade;
-import com.github.caio.henrique.algafood.domain.model.Usuario;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -22,19 +21,22 @@ public class CidadeModelAssembler extends RepresentationModelAssemblerSupport<Ci
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private AlgaLinks algaLinks;
+
     public CidadeModelAssembler() {
         super(CidadeController.class, CidadeModel.class);
     }
 
+    @Override
     public CidadeModel toModel(Cidade cidade) {
-
         CidadeModel cidadeModel = createModelWithId(cidade.getId(), cidade);
+
         modelMapper.map(cidade, cidadeModel);
 
-        cidadeModel.add(linkTo(methodOn(CidadeController.class)
-                .listar()).withRel("cidades"));
-        cidadeModel.getEstado().add(linkTo(methodOn(EstadoController.class)
-                .buscar(cidadeModel.getEstado().getId())).withSelfRel());
+        cidadeModel.add(algaLinks.linkToCidades("cidades"));
+
+        cidadeModel.getEstado().add(algaLinks.linkToEstado(cidadeModel.getEstado().getId()));
 
         return cidadeModel;
     }
@@ -42,6 +44,6 @@ public class CidadeModelAssembler extends RepresentationModelAssemblerSupport<Ci
     @Override
     public CollectionModel<CidadeModel> toCollectionModel(Iterable<? extends Cidade> entities) {
         return super.toCollectionModel(entities)
-                .add(linkTo(UsuarioController.class).withSelfRel());
+                .add(algaLinks.linkToCidades());
     }
 }

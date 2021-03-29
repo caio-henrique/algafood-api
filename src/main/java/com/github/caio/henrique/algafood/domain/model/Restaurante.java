@@ -1,9 +1,7 @@
 package com.github.caio.henrique.algafood.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -25,9 +23,10 @@ public class Restaurante {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @Column(nullable = false)
     private String nome;
 
-    @Column(name = "taxa_frete")
+    @Column(name = "taxa_frete", nullable = false)
     private BigDecimal taxaFrete;
 
     @ManyToOne
@@ -39,6 +38,8 @@ public class Restaurante {
 
     private Boolean ativo = Boolean.TRUE;
 
+    private Boolean aberto = Boolean.FALSE;
+
     @CreationTimestamp
     @Column(nullable = false, columnDefinition = "datetime")
     private OffsetDateTime dataCadastro;
@@ -48,65 +49,89 @@ public class Restaurante {
     private OffsetDateTime dataAtualizacao;
 
     @ManyToMany
-    @ToString.Exclude
     @JoinTable(name = "restaurante_forma_pagamento",
-        joinColumns = @JoinColumn(name = "restaurante_id"),
-        inverseJoinColumns = @JoinColumn(name = "forma_pagamento_id"))
-    private Set<FormaPagamento> formaPagamentos = new HashSet<>();
-
-    @JsonIgnore
-    @ToString.Exclude
-    @OneToMany(mappedBy = "restaurante")
-    private List<Produto> produtos = new ArrayList<>();
+            joinColumns = @JoinColumn(name = "restaurante_id"),
+            inverseJoinColumns = @JoinColumn(name = "forma_pagamento_id"))
+    private Set<FormaPagamento> formasPagamento = new HashSet<>();
 
     @ManyToMany
-    @ToString.Exclude
     @JoinTable(name = "restaurante_usuario_responsavel",
             joinColumns = @JoinColumn(name = "restaurante_id"),
             inverseJoinColumns = @JoinColumn(name = "usuario_id"))
     private Set<Usuario> responsaveis = new HashSet<>();
 
-    private Boolean aberto = Boolean.FALSE;
+    @OneToMany(mappedBy = "restaurante")
+    private List<Produto> produtos = new ArrayList<>();
+
+    public void ativar() {
+        setAtivo(true);
+    }
+
+    public void inativar() {
+        setAtivo(false);
+    }
 
     public void abrir() {
-        aberto = Boolean.TRUE;
+        setAberto(true);
     }
 
     public void fechar() {
-        aberto = Boolean.FALSE;
+        setAberto(false);
     }
 
-    public void ativar(){
-        this.ativo = Boolean.TRUE;
+    public boolean isAberto() {
+        return this.aberto;
     }
 
-    public void inativar(){
-        this.ativo = Boolean.FALSE;
+    public boolean isFechado() {
+        return !isAberto();
+    }
+
+    public boolean isInativo() {
+        return !isAtivo();
+    }
+
+    public boolean isAtivo() {
+        return this.ativo;
+    }
+
+    public boolean aberturaPermitida() {
+        return isAtivo() && isFechado();
+    }
+
+    public boolean ativacaoPermitida() {
+        return isInativo();
+    }
+
+    public boolean inativacaoPermitida() {
+        return isAtivo();
+    }
+
+    public boolean fechamentoPermitido() {
+        return isAberto();
     }
 
     public boolean removerFormaPagamento(FormaPagamento formaPagamento) {
-
-        return formaPagamentos.remove(formaPagamento);
+        return getFormasPagamento().remove(formaPagamento);
     }
 
     public boolean adicionarFormaPagamento(FormaPagamento formaPagamento) {
-
-        return formaPagamentos.add(formaPagamento);
-    }
-
-    public boolean removerResponsavel(Usuario usuario) {
-        return responsaveis.remove(usuario);
-    }
-
-    public boolean adicionarResponsavel(Usuario usuario) {
-        return responsaveis.add(usuario);
+        return getFormasPagamento().add(formaPagamento);
     }
 
     public boolean aceitaFormaPagamento(FormaPagamento formaPagamento) {
-        return formaPagamentos.contains(formaPagamento);
+        return getFormasPagamento().contains(formaPagamento);
     }
 
     public boolean naoAceitaFormaPagamento(FormaPagamento formaPagamento) {
         return !aceitaFormaPagamento(formaPagamento);
+    }
+
+    public boolean removerResponsavel(Usuario usuario) {
+        return getResponsaveis().remove(usuario);
+    }
+
+    public boolean adicionarResponsavel(Usuario usuario) {
+        return getResponsaveis().add(usuario);
     }
 }

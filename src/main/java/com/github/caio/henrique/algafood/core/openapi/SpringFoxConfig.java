@@ -53,7 +53,7 @@ public class SpringFoxConfig implements WebMvcConfigurer {
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.github.caio.henrique.algafood.api"))
+                .apis(RequestHandlerSelectors.basePackage("com.github.caio.henrique.algafood.api27"))
                 .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false)
