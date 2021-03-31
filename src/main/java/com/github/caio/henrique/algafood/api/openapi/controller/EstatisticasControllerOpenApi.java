@@ -1,6 +1,7 @@
 package com.github.caio.henrique.algafood.api.openapi.controller;
 
 
+import com.github.caio.henrique.algafood.api.controller.EstatisticasController;
 import com.github.caio.henrique.algafood.domain.filter.VendaDiariaFilter;
 import com.github.caio.henrique.algafood.domain.model.dto.VendaDiaria;
 import io.swagger.annotations.*;
@@ -11,6 +12,9 @@ import java.util.List;
 
 @Api(tags = "Estatísticas")
 public interface EstatisticasControllerOpenApi {
+
+    @ApiOperation(value = "Estatísticas", hidden = true)
+    EstatisticasController.EstatisticasModel estatisticas();
 
     @ApiOperation("Consulta estatísticas de vendas diárias")
     @ApiImplicitParams({
@@ -31,4 +35,5 @@ public interface EstatisticasControllerOpenApi {
     ResponseEntity<byte[]> consultarVendasDiariasPdf(
             VendaDiariaFilter filtro,
             String timeOffset);
+
 }

@@ -1,11 +1,13 @@
 package com.github.caio.henrique.algafood.api.controller;
 
+import com.github.caio.henrique.algafood.api.AlgaLinks;
 import com.github.caio.henrique.algafood.api.openapi.controller.EstatisticasControllerOpenApi;
 import com.github.caio.henrique.algafood.domain.filter.VendaDiariaFilter;
 import com.github.caio.henrique.algafood.domain.model.dto.VendaDiaria;
 import com.github.caio.henrique.algafood.domain.service.VendasQueryService;
 import com.github.caio.henrique.algafood.domain.service.VendasReportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,19 @@ public class EstatisticasController implements EstatisticasControllerOpenApi {
     @Autowired
     private VendasReportService vendasReportService;
 
+    @Autowired
+    private AlgaLinks algaLinks;
+
+    @Override
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public EstatisticasModel estatisticas() {
+        var estatisticasModel = new EstatisticasModel();
+
+        estatisticasModel.add(algaLinks.linkToEstatisticasVendasDiarias("vendas-diarias"));
+
+        return estatisticasModel;
+    }
+
     @GetMapping(path = "/vendas-diarias", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<VendaDiaria> consultarVendasDiarias(VendaDiariaFilter filtro,
             @RequestParam(required = false, defaultValue = "+00:00") String timeOffset) {
@@ -45,5 +60,8 @@ public class EstatisticasController implements EstatisticasControllerOpenApi {
                 .contentType(MediaType.APPLICATION_PDF)
                 .headers(headers)
                 .body(bytesPdf);
+    }
+
+    public static class EstatisticasModel extends RepresentationModel<EstatisticasModel> {
     }
 }
